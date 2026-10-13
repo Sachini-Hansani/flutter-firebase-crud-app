@@ -32,10 +32,7 @@ class _ReadScreenState extends State<ReadScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Read'),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text('Read'), centerTitle: true),
       body: _bodyWidget(),
     );
   }
@@ -46,9 +43,43 @@ class _ReadScreenState extends State<ReadScreen> {
     // 2. Handle ConnectionState.waiting (show a CircularProgressIndicator).
     // 3. Handle errors and empty data states.
     // 4. If data exists, return a ListView.builder that displays a StudentCard for each item.
-    
-    return const Center(
-      child: Text('Read List UI - To be implemented'),
+
+    return FutureBuilder<List<Student>>(
+      future: studentDetailsListFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        }
+
+        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return const Center(child: Text('No students found'));
+        }
+
+        List<Student> students = snapshot.data!;
+
+        return ListView.builder(
+          padding: const EdgeInsets.all(12),
+          itemCount: students.length,
+          itemBuilder: (context, index) {
+            Student student = students[index];
+
+            return StudentCard(
+              name: student.name,
+              id: student.id,
+              degree: student.degree,
+              onUpdated: (){
+                setState(() {
+                  studentDetailsListFuture = fetchData();
+                });
+              },
+            );
+          },
+        );
+      },
     );
   }
 }

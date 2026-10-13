@@ -73,13 +73,27 @@ class _CreateScreenState extends State<CreateScreen> {
               ElevatedButton(
                 onPressed: () async {
                   // TODO 5: Create a Map<String, dynamic> containing the text from your controllers
-                  
+                  Map<String, dynamic> studentInfo ={
+                    'name': nameController.text.trim(),
+                    'id': idController.text.trim(),
+                    'degree': degreeController.text.trim(),
+                  };
+
                   // TODO 6: Call Database().addStudent() passing your map and the ID string
-                  
+                  await Database().addStudent(
+                    studentInfo,
+                    idController.text.trim(),
+                  );
+
                   // TODO 7: If successful, clear all three controllers
-                  
+                  nameController.clear();
+                  idController.clear();
+                  degreeController.clear();
+
                   // TODO 8: Show a success message using Fluttertoast.showToast()
-                  
+                  Fluttertoast.showToast(
+                    msg: 'Student added successfully',
+                  );
                 },
                 child: const Text("Submit"),
               )
